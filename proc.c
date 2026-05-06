@@ -49,7 +49,7 @@ mycpu(void)
     if (cpus[i].apicid == apicid)
       return &cpus[i];
   }
-  panic("unknown apicid\n");
+  return &cpus[0];
 }
 
 // Disable interrupts so that we are not rescheduled
@@ -344,6 +344,7 @@ scheduler(void)
       p->state = RUNNING;
 
       swtch(&(c->scheduler), p->context);
+      cprintf("[SCHED] switch to pid=%d, name=%s\n", p->pid, p->name);
       switchkvm();
 
       // Process is done running for now.
