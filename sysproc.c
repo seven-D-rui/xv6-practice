@@ -96,3 +96,75 @@ sys_hello(void)
   cprintf("Hello from kernel!\n");
   return 0;
 }
+int
+sys_spproduce(void)
+{
+  int val;
+  if(argint(0, &val) < 0)
+    return -1;
+
+  acquire(&buflock);
+  while(count == BUF_SIZE){
+    sleep(&buffer, &buflock);
+  }
+  buffer[tail] = val;
+  tail = (tail + 1) % BUF_SIZE;
+  count++;
+  cprintf("produced %d, count=%d\n", val, count);
+  wakeup(&buffer);
+  release(&buflock);
+  return 0;
+}
+
+int
+sys_scconsume(void)
+{
+  int val;
+  acquire(&buflock);
+  while(count == 0){
+    sleep(&buffer, &buflock);
+  }
+  val = buffer[head];
+  head = (head + 1) % BUF_SIZE;
+  count--;
+  cprintf("consumed %d, count=%d\n", val, count);
+  wakeup(&buffer);
+  release(&buflock);
+  return val;
+}
+int
+sys_spproduce(void)
+{
+  int val;
+  if(argint(0, &val) < 0)
+    return -1;
+
+  acquire(&buflock);
+  while(count == BUF_SIZE){
+    sleep(&buffer, &buflock);
+  }
+  buffer[tail] = val;
+  tail = (tail + 1) % BUF_SIZE;
+  count++;
+  cprintf("produced %d, count=%d\n", val, count);
+  wakeup(&buffer);
+  release(&buflock);
+  return 0;
+}
+
+int
+sys_scconsume(void)
+{
+  int val;
+  acquire(&buflock);
+  while(count == 0){
+    sleep(&buffer, &buflock);
+  }
+  val = buffer[head];
+  head = (head + 1) % BUF_SIZE;
+  count--;
+  cprintf("consumed %d, count=%d\n", val, count);
+  wakeup(&buffer);
+  release(&buflock);
+  return val;
+}

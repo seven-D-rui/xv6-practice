@@ -85,6 +85,8 @@ argstr(int n, char **pp)
 extern int sys_chdir(void);
 extern int sys_close(void);
 extern int sys_hello(void);
+extern int sys_spproduce(void);
+extern int sys_scconsume(void);
 extern int sys_dup(void);
 extern int sys_exec(void);
 extern int sys_exit(void);
@@ -128,6 +130,8 @@ static int (*syscalls[])(void) = {
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
 [SYS_hello]   sys_hello,
+[SYS_spproduce] sys_spproduce,
+[SYS_scconsume] sys_scconsume,
 };
 
 void
