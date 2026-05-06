@@ -16,6 +16,8 @@
 #include "file.h"
 #include "fcntl.h"
 
+struct spinlock writelock;
+
 // Fetch the nth word-sized system call argument as a file descriptor
 // and return both the descriptor and the corresponding struct file.
 static int
@@ -81,15 +83,18 @@ sys_read(void)
 int
 sys_write(void)
 {
-  cprintf("[KERNEL] sys write unloaded\n");
   struct file *f;
   int n;
   char *p;
 
   if(argfd(0, 0, &f) < 0 || argint(2, &n) < 0 || argptr(1, &p, n) < 0)
     return -1;
+
+  acquire(&writelock);
   cprintf("[PID=%d] ", myproc()->pid);
-  return filewrite(f, p, n);
+  int ret = filewrite(f, p, n);
+  release(&writelock);
+  return ret;
 }
 
 int
